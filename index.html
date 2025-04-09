@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misfortune Cookies</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            color: #e74c3c;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        .cookie {
+            background-color: #3a3a3a;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fortune {
+            font-size: 1.5rem;
+            font-style: italic;
+            line-height: 1.4;
+        }
+        
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #c0392b;
+        }
+        
+        .description {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Misfortune Cookies</h1>
+        
+        <div class="cookie">
+            <p id="fortune" class="fortune">Click the button to crack open your misfortune cookie...</p>
+        </div>
+        
+        <button id="generateBtn">Crack Open a Cookie</button>
+        
+        <div class="description">
+            <p>Welcome to Misfortune Cookies, where we serve up deliberately bleak, darkly funny, and emotionally unsettling fortune cookie messages. Our cookies are crafted with cynicism, passive aggression, and existential dread - perfect for those who prefer their wisdom with a side of discomfort.</p>
+        </div>
+    </div>
+
+    <script>
+        // The prompt for generating misfortunes
+        const misfortunePrompt = `Write a deliberately bleak, darkly funny, or emotionally unsettling fortune cookie message, as if the writer were subtly sabotaging the recipient under the guise of ancient wisdom. The tone should mimic traditional fortune cookies—brief, declarative, and slightly mystical—but twisted toward pessimism, passive aggression, or existential dread. Imagine this was written by a cynical oracle or a disgruntled employee at the fortune cookie factory trying to inject discomfort into dinner. Avoid outright cruelty or profanity—make it feel believable yet wrong, just enough to make someone frown, laugh nervously, or reflect uncomfortably. The ideal misfortune should be short (under 20 words), dryly impersonal, and leave the reader slightly worse off than before.`;
+        
+        // Pre-written misfortunes (since we can't actually call an AI API from plain HTML/JS)
+        const misfortunes = [
+            "You will disappoint your father.",
+            "That pain you've been ignoring? It's not nothing.",
+            "Your friends discuss you when you leave the room.",
+            "Someone is settling for you right now.",
+            "Your backup plan will also fail.",
+            "The universe is indifferent to your struggles.",
+            "Your potential has an expiration date.",
+            "They're right about you.",
+            "Your best years have likely passed already.",
+            "That recurring dream means exactly what you fear it does.",
+            "Your secrets have a way of introducing themselves.",
+            "Success comes to those who wait, but not to those who wait too long.",
+            "Your pet only tolerates you.",
+            "The path you didn't take was the correct one.",
+            "Your insecurities are completely justified.",
+            "That thing you lost is exactly where you'll never look.",
+            "The feeling is not mutual.",
+            "Time will not heal this particular wound.",
+            "Your efforts will be acknowledged but ultimately forgotten.",
+            "The call you're avoiding needs to be made.",
+            "Your memory of events differs significantly from everyone else's.",
+            "That wasn't a coincidence.",
+            "Your lucky numbers are irrelevant in the face of your choices.",
+            "Someone saved your contact under a different name.",
+            "The deadline you forgot still remembers you.",
+            "Your carefully constructed persona isn't fooling anyone.",
+            "That opportunity wasn't meant for you anyway.",
+            "Your handwriting reveals more than you intended.",
+            "They were right to leave.",
+            "Your reflection has thoughts of its own."
+        ];
+        
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const randomIndex = Math.floor(Math.random() * misfortunes.length);
+            document.getElementById('fortune').textContent = misfortunes[randomIndex];
+        });
+    </script>
+</body>
+</html>
