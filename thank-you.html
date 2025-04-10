@@ -42,28 +42,27 @@
     }
   </style>
   <script>
-   window.onload = async function () {
-  const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get("order");
+    window.onload = async function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("order");
 
-  if (!token) {
-    window.location.href = "index.html";
-    return;
-  }
+      if (!token) {
+        window.location.href = "index.html";
+        return;
+      }
 
-  try {
-    const res = await fetch("/.netlify/functions/validate-order?order=" + token);
-    const result = await res.json();
+      try {
+        const res = await fetch("/.netlify/functions/validate-order?order=" + token);
+        const result = await res.json();
 
-    if (!result.valid) {
-      window.location.href = "index.html";
+        if (!result.valid) {
+          window.location.href = "index.html";
+        }
+      } catch (err) {
+        console.error("Validation failed", err);
+        window.location.href = "index.html";
+      }
     }
-  } catch (err) {
-    console.error("Validation failed", err);
-    window.location.href = "index.html";
-  }
-}
-
   </script>
 </head>
 <body>
