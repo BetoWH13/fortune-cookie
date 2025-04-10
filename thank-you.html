@@ -41,6 +41,15 @@
       text-decoration: none;
     }
   </style>
+  <script>
+    // Harden logic: Only show page if redirected from PayPal
+    window.onload = function () {
+      const referrer = document.referrer;
+      if (!referrer.includes("paypal.com")) {
+        document.body.innerHTML = '<h1>Oops! 🔒</h1><p>This page is only available after a completed purchase.</p><p><a href="index.html">← Return to cookies</a></p>';
+      }
+    }
+  </script>
 </head>
 <body>
   <h1>Your Order Has Been Brewed ☕</h1>
@@ -58,3 +67,4 @@
   </div>
 </body>
 </html>
+
