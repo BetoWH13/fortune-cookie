@@ -60,9 +60,9 @@
 
   <canvas id="mugCanvas" width="1000" height="1000"></canvas>
 
-  <button onclick="buyMug()">Buy This Mug</button>
+  <button onclick="submitOrder()">Buy This Mug</button>
 
-  <p class="small-text">You’ll be redirected to our Gumroad checkout page.</p>
+  <p class="small-text">Only shipping to the USA at this time.</p>
 
   <div class="footer">
     <p><a href="index.html">← Crack another cookie</a></p>
@@ -71,15 +71,14 @@
   <script>
     const canvas = document.getElementById("mugCanvas");
     const ctx = canvas.getContext("2d");
-    let encodedQuoteForCheckout = '';
+    let quoteText = "";
 
     window.onload = function () {
       const params = new URLSearchParams(window.location.search);
       const quote = params.get('quote');
       if (quote) {
-        const decoded = decodeURIComponent(quote);
-        encodedQuoteForCheckout = encodeURIComponent(decoded);
-        renderQuote(decoded);
+        quoteText = decodeURIComponent(quote);
+        renderQuote(quoteText);
       }
     };
 
@@ -122,15 +121,43 @@
       return lines;
     }
 
-    function buyMug() {
-      // 🚨 Replace this with your actual Gumroad product URL
-      const gumroadBase = "https://yourgumroadlink.gumroad.com/l/misfortune-mug";
+    async function submitOrder() {
+      const email = prompt("Enter your email for order confirmation:");
+      const name = prompt("Enter your full name:");
+      const addressLine1 = prompt("Street address:");
+      const city = prompt("City:");
+      const state = prompt("State (e.g., NY):");
+      const zip = prompt("ZIP code:");
 
-      // OPTIONAL: Append the quote as a custom field for your records
-      const fullURL = `${gumroadBase}?quote=${encodedQuoteForCheckout}`;
+      // Convert canvas to image blob URL
+      const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const imageUrl = URL.createObjectURL(imageBlob);
 
-      window.location.href = fullURL;
+      const orderData = {
+        quoteText,
+        customerName: name,
+        email,
+        addressLine1,
+        city,
+        state,
+        zip,
+        imageUrl
+      };
+
+      const response = await fetch("/api/create-printful-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData)
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert("Your cursed mug is on its way!");
+      } else {
+        alert("Failed to place order: " + JSON.stringify(result.error));
+      }
     }
   </script>
 </body>
 </html>
+
