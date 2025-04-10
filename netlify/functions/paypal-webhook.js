@@ -5,9 +5,11 @@ export async function handler(event) {
   try {
     const params = new URLSearchParams(event.body);
 
-    // Validate required PayPal fields
     const paymentStatus = params.get('payment_status');
-    const quote = params.get('custom'); // we’ll pass the quote here during checkout
+    const rawCustom = params.get('custom') || "";
+    const [quote, stickerFlag] = rawCustom.split("||");
+    const wantsSticker = (stickerFlag === "sticker");
+
     const payerEmail = params.get('payer_email');
     const fullName = `${params.get('first_name')} ${params.get('last_name')}`;
     const address1 = params.get('address_street');
@@ -16,15 +18,12 @@ export async function handler(event) {
     const zip = params.get('address_zip');
     const country = params.get('address_country_code') || 'US';
 
-    // Only proceed on completed payments
     if (paymentStatus !== 'Completed') {
       return { statusCode: 200, body: 'Payment not completed — skipping order.' };
     }
 
-    // Generate static placeholder image for now (replace with CDN later)
     const imageUrl = `https://via.placeholder.com/1000x1000.png?text=${encodeURIComponent(quote)}`;
 
-    // Construct payload to call create-printful-order
     const orderPayload = {
       quoteText: quote,
       customerName: fullName,
@@ -34,10 +33,10 @@ export async function handler(event) {
       state,
       zip,
       country,
-      imageUrl
+      imageUrl,
+      wantsSticker
     };
 
-    // Call Printful order function internally
     const response = await fetch(`${process.env.URL}/.netlify/functions/create-printful-order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -57,3 +56,4 @@ export async function handler(event) {
     };
   }
 }
+
