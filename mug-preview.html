@@ -23,7 +23,7 @@
       margin: 1.5rem 0;
     }
 
-    button {
+    button, form button {
       background-color: #e74c3c;
       color: white;
       border: none;
@@ -34,7 +34,7 @@
       margin-top: 1rem;
     }
 
-    button:hover {
+    button:hover, form button:hover {
       background-color: #c0392b;
     }
 
@@ -60,7 +60,18 @@
 
   <canvas id="mugCanvas" width="1000" height="1000"></canvas>
 
-  <button onclick="submitOrder()">Buy This Mug</button>
+  <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+    <input type="hidden" name="cmd" value="_xclick">
+    <input type="hidden" name="business" value="beto@mazalcrafts.com">
+    <input type="hidden" name="item_name" value="Custom Misfortune Mug">
+    <input type="hidden" name="amount" value="21.99">
+    <input type="hidden" name="currency_code" value="USD">
+    <input type="hidden" name="custom" id="paypalCustom">
+    <input type="hidden" name="notify_url" value="https://misfortunecookie.netlify.app/.netlify/functions/paypal-webhook">
+    <input type="hidden" name="return" value="https://misfortunecookie.netlify.app/thank-you.html">
+    <input type="hidden" name="no_shipping" value="1">
+    <button type="submit">💸 Buy This Mug via PayPal</button>
+  </form>
 
   <p class="small-text">Only shipping to the USA at this time.</p>
 
@@ -79,13 +90,18 @@
       if (quote) {
         quoteText = decodeURIComponent(quote);
         renderQuote(quoteText);
+
+        const paypalInput = document.getElementById('paypalCustom');
+        if (paypalInput) {
+          paypalInput.value = quoteText;
+        }
       }
     };
 
     function renderQuote(quote) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "#FFFFFF"; // mug background
+      ctx.fillStyle = "#FFFFFF";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = "bold 48px 'Courier New'";
@@ -120,44 +136,6 @@
       lines.push(currentLine);
       return lines;
     }
-
-    async function submitOrder() {
-      const email = prompt("Enter your email for order confirmation:");
-      const name = prompt("Enter your full name:");
-      const addressLine1 = prompt("Street address:");
-      const city = prompt("City:");
-      const state = prompt("State (e.g., NY):");
-      const zip = prompt("ZIP code:");
-
-      // Convert canvas to image blob URL
-      const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-      const imageUrl = URL.createObjectURL(imageBlob);
-
-      const orderData = {
-        quoteText,
-        customerName: name,
-        email,
-        addressLine1,
-        city,
-        state,
-        zip,
-        imageUrl
-      };
-
-      const response = await fetch("/api/create-printful-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData)
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        alert("Your cursed mug is on its way!");
-      } else {
-        alert("Failed to place order: " + JSON.stringify(result.error));
-      }
-    }
   </script>
 </body>
 </html>
-
