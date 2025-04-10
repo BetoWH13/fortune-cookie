@@ -1,5 +1,5 @@
 [build]
-  publish = "dist"               # optional: change to "." if you're not building anything
+  publish = "."  # You're not using a static site generator, so this is root
   functions = "netlify/functions"
 
 [functions]
