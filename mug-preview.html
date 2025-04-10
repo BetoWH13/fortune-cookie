@@ -64,12 +64,18 @@
     <input type="hidden" name="cmd" value="_xclick">
     <input type="hidden" name="business" value="beto@mazalcrafts.com">
     <input type="hidden" name="item_name" value="Custom Misfortune Mug">
-    <input type="hidden" name="amount" value="21.99">
+    <input type="hidden" name="amount" id="paypalAmount" value="21.99">
     <input type="hidden" name="currency_code" value="USD">
     <input type="hidden" name="custom" id="paypalCustom">
     <input type="hidden" name="notify_url" value="https://misfortunecookie.netlify.app/.netlify/functions/paypal-webhook">
     <input type="hidden" name="return" value="https://misfortunecookie.netlify.app/thank-you.html?order=abc123">
     <input type="hidden" name="no_shipping" value="1">
+
+    <label style="margin-top: 1rem; display:block;">
+      <input type="checkbox" id="addSticker" />
+      Also get this as a sticker (+$4.99)
+    </label>
+
     <button type="submit">💸 Buy This Mug via PayPal</button>
   </form>
 
@@ -136,17 +142,21 @@
       lines.push(currentLine);
       return lines;
     }
-  </script> 
-  <!-- Place just before closing </body> -->
-<footer style="margin-top: 3rem; font-size: 0.9rem; color: #888;">
-  <p>
-    <a href="privacy.html" style="color:#e67e22;">Privacy Policy</a> |
-    <a href="terms.html" style="color:#e67e22;">Terms of Service</a> |
-    <a href="shipping.html" style="color:#e67e22;">Shipping & Returns</a>
-  </p>
-</footer>
-</body>
-</html>
 
+    document.getElementById("paypalForm").addEventListener("submit", function (e) {
+      const wantsSticker = document.getElementById("addSticker").checked;
+      const finalCustom = quoteText + (wantsSticker ? "||sticker" : "");
+      document.getElementById("paypalCustom").value = finalCustom;
+      document.getElementById("paypalAmount").value = wantsSticker ? "26.98" : "21.99";
+    });
+  </script>
+
+  <footer style="margin-top: 3rem; font-size: 0.9rem; color: #888;">
+    <p>
+      <a href="privacy.html" style="color:#e67e22;">Privacy Policy</a> |
+      <a href="terms.html" style="color:#e67e22;">Terms of Service</a> |
+      <a href="shipping.html" style="color:#e67e22;">Shipping & Returns</a>
+    </p>
+  </footer>
 </body>
 </html>
