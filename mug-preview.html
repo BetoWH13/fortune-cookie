@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Misfortune Mug Preview</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #1a1a1a;
+      color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    canvas {
+      background-color: white;
+      border: 3px dashed #666;
+      margin: 1.5rem 0;
+    }
+
+    button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      font-size: 1.2rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background-color: #c0392b;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    a {
+      color: #e67e22;
+    }
+
+    .small-text {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>☕ Your Misfortune Mug Preview</h1>
+
+  <canvas id="mugCanvas" width="1000" height="1000"></canvas>
+
+  <button onclick="buyMug()">Buy This Mug</button>
+
+  <p class="small-text">You’ll be redirected to our Gumroad checkout page.</p>
+
+  <div class="footer">
+    <p><a href="index.html">← Crack another cookie</a></p>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("mugCanvas");
+    const ctx = canvas.getContext("2d");
+    let encodedQuoteForCheckout = '';
+
+    window.onload = function () {
+      const params = new URLSearchParams(window.location.search);
+      const quote = params.get('quote');
+      if (quote) {
+        const decoded = decodeURIComponent(quote);
+        encodedQuoteForCheckout = encodeURIComponent(decoded);
+        renderQuote(decoded);
+      }
+    };
+
+    function renderQuote(quote) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#FFFFFF"; // mug background
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = "bold 48px 'Courier New'";
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const lines = wrapText(ctx, quote, canvas.width - 100);
+      const lineHeight = 60;
+      const startY = (canvas.height - lines.length * lineHeight) / 2;
+
+      lines.forEach((line, i) => {
+        ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
+      });
+    }
+
+    function wrapText(ctx, text, maxWidth) {
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(currentLine + " " + word).width;
+        if (width < maxWidth) {
+          currentLine += " " + word;
+        } else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      lines.push(currentLine);
+      return lines;
+    }
+
+    function buyMug() {
+      // 🚨 Replace this with your actual Gumroad product URL
+      const gumroadBase = "https://yourgumroadlink.gumroad.com/l/misfortune-mug";
+
+      // OPTIONAL: Append the quote as a custom field for your records
+      const fullURL = `${gumroadBase}?quote=${encodedQuoteForCheckout}`;
+
+      window.location.href = fullURL;
+    }
+  </script>
+</body>
+</html>
