@@ -42,13 +42,28 @@
     }
   </style>
   <script>
-    // Harden logic: Only show page if redirected from PayPal
-    window.onload = function () {
-      const referrer = document.referrer;
-      if (!referrer.includes("paypal.com")) {
-        document.body.innerHTML = '<h1>Oops! 🔒</h1><p>This page is only available after a completed purchase.</p><p><a href="index.html">← Return to cookies</a></p>';
-      }
+   window.onload = async function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("order");
+
+  if (!token) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  try {
+    const res = await fetch("/.netlify/functions/validate-order?order=" + token);
+    const result = await res.json();
+
+    if (!result.valid) {
+      window.location.href = "index.html";
     }
+  } catch (err) {
+    console.error("Validation failed", err);
+    window.location.href = "index.html";
+  }
+}
+
   </script>
 </head>
 <body>
