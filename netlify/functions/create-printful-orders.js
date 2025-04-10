@@ -1,11 +1,10 @@
 // Netlify Function: create-printful-order.js
-// This function receives buyer data + quote and creates an order via Printful API
+// Updated to optionally include a sticker
 
 export async function handler(event) {
   try {
     const data = JSON.parse(event.body);
 
-    // Extract order data
     const {
       quoteText,
       customerName,
@@ -15,10 +14,10 @@ export async function handler(event) {
       state,
       zip,
       country = "US",
-      imageUrl // final mug design as a hosted PNG URL or base64-encoded string
+      imageUrl,
+      wantsSticker = false
     } = data;
 
-    // Make sure we have the bare minimum to fulfill
     if (!quoteText || !customerName || !addressLine1 || !city || !state || !zip || !imageUrl) {
       return {
         statusCode: 400,
@@ -26,8 +25,34 @@ export async function handler(event) {
       };
     }
 
-    // Define the product (11oz white mug)
-    const variantId = 16895; // Change if using a different mug size/model
+    const variantIdMug = 16895; // White 11oz Mug
+    const variantIdSticker = 45250; // Replace with your actual Printful Sticker variant ID
+
+    const items = [
+      {
+        variant_id: variantIdMug,
+        quantity: 1,
+        name: `Misfortune Mug`,
+        files: [
+          {
+            url: imageUrl
+          }
+        ]
+      }
+    ];
+
+    if (wantsSticker) {
+      items.push({
+        variant_id: variantIdSticker,
+        quantity: 1,
+        name: `Misfortune Sticker`,
+        files: [
+          {
+            url: imageUrl
+          }
+        ]
+      });
+    }
 
     const orderPayload = {
       recipient: {
@@ -39,21 +64,9 @@ export async function handler(event) {
         country_code: country,
         email
       },
-      items: [
-        {
-          variant_id: variantId,
-          quantity: 1,
-          name: `Misfortune Mug`,
-          files: [
-            {
-              url: imageUrl
-            }
-          ]
-        }
-      ]
+      items
     };
 
-    // Send request to Printful API
     const response = await fetch("https://api.printful.com/orders", {
       method: "POST",
       headers: {
@@ -83,3 +96,4 @@ export async function handler(event) {
     };
   }
 }
+
