@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thank You for Your Purchase</title>
+  <meta name="robots" content="noindex, nofollow">
   <style>
     body {
       font-family: 'Courier New', monospace;
@@ -42,30 +43,11 @@
     }
   </style>
   <script>
-    // Harden thank-you page with token check
-    window.onload = async function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get("order");
-      if (!token) {
-        blockAccess(); return;
+    window.onload = function () {
+      const referrer = document.referrer;
+      if (!referrer.includes("paypal.com")) {
+        document.body.innerHTML = '<h1>Oops! 🔒</h1><p>This page is only available after a completed purchase.</p><p><a href="index.html">← Return to cookies</a></p>';
       }
-      try {
-        const res = await fetch(`/.netlify/functions/validate-order?order=${token}`);
-        const data = await res.json();
-        if (!data.valid) {
-          blockAccess();
-        }
-      } catch (err) {
-        blockAccess();
-      }
-    };
-
-    function blockAccess() {
-      document.body.innerHTML = `
-        <h1>Oops! 🔒</h1>
-        <p>This page is only available after a completed purchase.</p>
-        <p><a href="index.html">← Return to cookies</a></p>
-      `;
     }
   </script>
 </head>
@@ -85,4 +67,3 @@
   </div>
 </body>
 </html>
-
