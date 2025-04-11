@@ -42,13 +42,25 @@ export async function handler(event) {
       wantsSticker
     };
 
-    const response = await fetch(`${process.env.URL}/.netlify/functions/create-printful-order`, {
+    const response = await fetch("https://misfortunecookie.netlify.app/.netlify/functions/create-printful-order", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderPayload)
     });
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (jsonErr) {
+      return {
+        statusCode: 500,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          error: 'Non-JSON response from Printful handler',
+          raw: await response.text()
+        })
+      };
+    }
 
     return {
       statusCode: response.status,
@@ -63,4 +75,3 @@ export async function handler(event) {
     };
   }
 }
-
