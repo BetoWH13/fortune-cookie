@@ -1,5 +1,5 @@
 // Netlify Function: create-printful-order.js
-// Updated to optionally include a sticker
+// This function receives buyer data + quote and creates an order via Printful API
 
 export async function handler(event) {
   try {
@@ -26,13 +26,13 @@ export async function handler(event) {
     }
 
     const variantIdMug = 16895; // White 11oz Mug
-    const variantIdSticker = 45250; // Replace with your actual Printful Sticker variant ID
+    const variantIdSticker = 45250; // Replace this with your real Printful sticker variant ID
 
     const items = [
       {
         variant_id: variantIdMug,
         quantity: 1,
-        name: `Misfortune Mug`,
+        name: "Misfortune Mug",
         files: [
           {
             url: imageUrl
@@ -45,7 +45,7 @@ export async function handler(event) {
       items.push({
         variant_id: variantIdSticker,
         quantity: 1,
-        name: `Misfortune Sticker`,
+        name: "Misfortune Sticker",
         files: [
           {
             url: imageUrl
