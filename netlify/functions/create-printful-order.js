@@ -26,7 +26,8 @@ export async function handler(event) {
     }
 
     const variantIdMug = 16895; // White 11oz Mug
-    const variantIdSticker = 45250; // Replace this with your real Printful sticker variant ID
+    const variantIdSticker = 48861; // ✅ 5.5×5.5 Bubble-Free Sticker (white)
+
 
     const items = [
       {
