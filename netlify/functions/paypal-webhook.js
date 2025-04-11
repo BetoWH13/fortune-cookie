@@ -48,16 +48,18 @@ export async function handler(event) {
       body: JSON.stringify(orderPayload)
     });
 
+    const rawText = await response.text();
     let result;
+
     try {
-      result = await response.json();
+      result = JSON.parse(rawText);
     } catch (jsonErr) {
       return {
         statusCode: 500,
         headers: corsHeaders,
         body: JSON.stringify({
           error: 'Non-JSON response from Printful handler',
-          raw: await response.text()
+          raw: rawText
         })
       };
     }
