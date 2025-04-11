@@ -1,6 +1,8 @@
 // Netlify Function: paypal-webhook.js
 // Handles PayPal IPN webhook and triggers Printful order automatically
 
+import { handler as createPrintfulOrder } from './create-printful-order.js';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type'
@@ -42,32 +44,15 @@ export async function handler(event) {
       wantsSticker
     };
 
-    const response = await fetch("https://misfortunecookie.netlify.app/.netlify/functions/create-printful-order", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    // Direct function call instead of fetch
+    const result = await createPrintfulOrder({
       body: JSON.stringify(orderPayload)
     });
 
-    const rawText = await response.text();
-    let result;
-
-    try {
-      result = JSON.parse(rawText);
-    } catch (jsonErr) {
-      return {
-        statusCode: 500,
-        headers: corsHeaders,
-        body: JSON.stringify({
-          error: 'Non-JSON response from Printful handler',
-          raw: rawText
-        })
-      };
-    }
-
     return {
-      statusCode: response.status,
+      statusCode: result.statusCode,
       headers: corsHeaders,
-      body: JSON.stringify(result)
+      body: result.body
     };
   } catch (err) {
     return {
