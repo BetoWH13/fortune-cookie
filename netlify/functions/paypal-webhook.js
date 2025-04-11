@@ -1,6 +1,11 @@
 // Netlify Function: paypal-webhook.js
 // Handles PayPal IPN webhook and triggers Printful order automatically
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
 export async function handler(event) {
   try {
     const params = new URLSearchParams(event.body);
@@ -19,7 +24,7 @@ export async function handler(event) {
     const country = params.get('address_country_code') || 'US';
 
     if (paymentStatus !== 'Completed') {
-      return { statusCode: 200, body: 'Payment not completed — skipping order.' };
+      return { statusCode: 200, headers: corsHeaders, body: 'Payment not completed — skipping order.' };
     }
 
     const imageUrl = `https://via.placeholder.com/1000x1000.png?text=${encodeURIComponent(quote)}`;
@@ -47,11 +52,13 @@ export async function handler(event) {
 
     return {
       statusCode: response.status,
+      headers: corsHeaders,
       body: JSON.stringify(result)
     };
   } catch (err) {
     return {
       statusCode: 500,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Internal error in PayPal webhook', details: err.message })
     };
   }
