@@ -84,6 +84,16 @@
       line-height: 1.5;
     }
 
+    .daily-misfortune {
+      margin-top: 40px;
+    }
+
+    canvas {
+      background-color: #ffffff;
+      border: 2px dashed #555;
+      margin-top: 1rem;
+    }
+
     .footer {
       margin-top: 40px;
       font-size: 0.8rem;
@@ -113,6 +123,15 @@
       </p>
     </div>
 
+    <div class="daily-misfortune">
+      <h2>The Daily Misfortune</h2>
+      <canvas id="misfortuneMeme" width="600" height="600"></canvas>
+      <div style="margin-top:10px;">
+        <button id="copyQuote">📋 Copy Quote</button>
+        <a id="pinIt" target="_blank">📌 Pin It</a>
+      </div>
+    </div>
+
     <div class="footer">
       <p>
         DISCLAIMER: This site is for humor purposes only. Some quotes were generated using AI. Please don't take any of these messages seriously—they're meant to be darkly humorous, not actual predictions or advice.
@@ -120,12 +139,10 @@
     </div>
   </div>
 
-  <!-- Prompt metadata for your own notes -->
   <script>
     const misfortunePrompt = `Write a deliberately bleak, darkly funny, or emotionally unsettling fortune cookie message, as if the writer were subtly sabotaging the recipient under the guise of ancient wisdom...`;
   </script>
 
-  <!-- Import misfortunes from separate file -->
   <script type="module">
     import misfortunes from './misfortunes.js';
 
@@ -164,14 +181,71 @@
       const encodedQuote = encodeURIComponent(lastMisfortune);
       window.location.href = `mug-preview.html?quote=${encodedQuote}`;
     });
-  </script> 
-  <footer style="margin-top: 3rem; font-size: 0.9rem; color: #888;">
-  <p>
-    <a href="privacy.html" style="color:#e67e22;">Privacy Policy</a> |
-    <a href="terms.html" style="color:#e67e22;">Terms of Service</a> |
-    <a href="shipping.html" style="color:#e67e22;">Shipping & Returns</a>
-  </p>
-</footer>
 
+    // Daily Misfortune Block
+    const canvas = document.getElementById('misfortuneMeme');
+    const ctx = canvas.getContext('2d');
+    const copyBtn = document.getElementById('copyQuote');
+    const pinBtn = document.getElementById('pinIt');
+
+    const todaySeed = new Date().toDateString();
+    const hash = [...todaySeed].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const quoteIndex = hash % misfortunes.length;
+    const quote = misfortunes[quoteIndex];
+
+    function renderMeme(text) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "bold 28px 'Courier New'";
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const lines = wrapText(ctx, text, canvas.width - 100);
+      const lineHeight = 40;
+      const startY = (canvas.height - lines.length * lineHeight) / 2;
+
+      lines.forEach((line, i) => {
+        ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
+      });
+    }
+
+    function wrapText(ctx, text, maxWidth) {
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(currentLine + " " + word).width;
+        if (width < maxWidth) {
+          currentLine += " " + word;
+        } else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      lines.push(currentLine);
+      return lines;
+    }
+
+    renderMeme(quote);
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(quote).then(() => {
+        alert("Quote copied!");
+      });
+    });
+
+    pinBtn.href = `https://www.pinterest.com/pin/create/button/?url=https://misfortunecookie.top&media=${canvas.toDataURL()}&description=${encodeURIComponent(quote)}`;
+  </script>
+
+  <footer style="margin-top: 3rem; font-size: 0.9rem; color: #888;">
+    <p>
+      <a href="privacy.html" style="color:#e67e22;">Privacy Policy</a> |
+      <a href="terms.html" style="color:#e67e22;">Terms of Service</a> |
+      <a href="shipping.html" style="color:#e67e22;">Shipping & Returns</a>
+    </p>
+  </footer>
 </body>
 </html>
